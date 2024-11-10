@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { TimeLinePost, today, thisWeek, thisMonth } from '@/posts'
+import { TimeLinePost } from '@/posts'
 import { DateTime } from 'luxon'
 import TimeLineItem from './TimeLineItem.vue'
 import { usePosts } from '@/stores/posts'
@@ -17,8 +17,12 @@ function selectPeriod(period: Period) {
 }
 
 const posts = computed<TimeLinePost[]>(() => {
-  return [today, thisWeek, thisMonth]
-    .map((post) => {
+  return postsStore.ids
+    .map((id) => {
+      const post = postsStore.all.get(id)
+      if (!post) {
+        throw Error(`Post with id of ${id} was expected but not found`)
+      }
       return {
         ...post,
         created: DateTime.fromISO(post.created),
@@ -37,8 +41,6 @@ const posts = computed<TimeLinePost[]>(() => {
 </script>
 
 <template>
-  {{ postsStore.foo }}
-  <button @click="postsStore.updateFoo('bar')">update foo</button>
   <nav class="is-primary panel">
     <span class="panel-tabs">
       <a
