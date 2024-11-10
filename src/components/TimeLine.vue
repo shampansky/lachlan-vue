@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { TimeLinePost, today, thisWeek, thisMonth } from '@/posts';
-import { DateTime } from 'luxon';
-import TimeLineItem from './TimeLineItem.vue';
+import { ref, computed } from 'vue'
+import { TimeLinePost, today, thisWeek, thisMonth } from '@/posts'
+import { DateTime } from 'luxon'
+import TimeLineItem from './TimeLineItem.vue'
 
-const periods = ['Today', 'This Week', 'This Month'] as const;
-type Period = (typeof periods)[number];
+const periods = ['Today', 'This Week', 'This Month'] as const
+type Period = (typeof periods)[number]
 
-const selectedPeriod = ref<Period>(periods[0]);
+const selectedPeriod = ref<Period>(periods[0])
 
 function selectPeriod(period: Period) {
-  selectedPeriod.value = period;
+  selectedPeriod.value = period
 }
 
 const posts = computed<TimeLinePost[]>(() => {
@@ -19,18 +19,18 @@ const posts = computed<TimeLinePost[]>(() => {
       return {
         ...post,
         created: DateTime.fromISO(post.created),
-      };
+      }
     })
     .filter((post) => {
       if (selectedPeriod.value === 'Today') {
-        return post.created >= DateTime.now().minus({ day: 1 });
+        return post.created >= DateTime.now().minus({ day: 1 })
       }
       if (selectedPeriod.value === 'This Week') {
-        return post.created >= DateTime.now().minus({ week: 1 });
+        return post.created >= DateTime.now().minus({ week: 1 })
       }
-      return post;
-    });
-});
+      return post
+    })
+})
 </script>
 
 <template>
@@ -46,10 +46,6 @@ const posts = computed<TimeLinePost[]>(() => {
       </a>
     </span>
 
-    <TimeLineItem
-      v-for="post of posts"
-      :key="post.id"
-      :post="post"
-    />
+    <TimeLineItem v-for="post of posts" :key="post.id" :post="post" />
   </nav>
 </template>

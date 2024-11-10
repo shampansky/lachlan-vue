@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { TimeLinePost } from '@/posts';
+import { TimeLinePost } from '@/posts'
 
 defineProps<{
-  post: TimeLinePost;
-}>();
+  post: TimeLinePost
+}>()
 </script>
 
 <template>
