@@ -3,6 +3,9 @@ import { ref, computed } from 'vue'
 import { TimeLinePost, today, thisWeek, thisMonth } from '@/posts'
 import { DateTime } from 'luxon'
 import TimeLineItem from './TimeLineItem.vue'
+import { usePosts } from '@/stores/posts'
+
+const postsStore = usePosts()
 
 const periods = ['Today', 'This Week', 'This Month'] as const
 type Period = (typeof periods)[number]
@@ -34,6 +37,8 @@ const posts = computed<TimeLinePost[]>(() => {
 </script>
 
 <template>
+  {{ postsStore.getState().foo }}
+  <button @click="postsStore.updateFoo('bar')">update foo</button>
   <nav class="is-primary panel">
     <span class="panel-tabs">
       <a
