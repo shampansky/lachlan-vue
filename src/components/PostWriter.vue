@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import type { Ref } from 'vue'
 import type { TimeLinePost } from '@/posts'
-import { Marked } from "marked";
-import { markedHighlight } from "marked-highlight";
-import hljs from 'highlight.js';
+import { Marked } from 'marked'
+import { markedHighlight } from 'marked-highlight'
+import hljs from 'highlight.js'
+import { debounce } from 'lodash'
 
 const props = defineProps<{ post: TimeLinePost }>()
 
@@ -12,17 +14,22 @@ const marked = new Marked(
     emptyLangClass: 'hljs',
     langPrefix: 'hljs language-',
     highlight(code, lang) {
-      const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-      return hljs.highlight(code, { language }).value;
-    }
+      const language = hljs.getLanguage(lang) ? lang : 'plaintext'
+      return hljs.highlight(code, { language }).value
+    },
   })
-);
+)
 const title = ref(props.post.title)
 const content = ref(props.post.markdown)
+const html: Ref<string | Promise<string>> = ref('')
 const contentEditable = ref<HTMLDivElement>()
-const html = computed(() =>
-  marked.parse(content.value)
-);
+
+function handleInput() {
+  if (!contentEditable.value) {
+    throw Error('ContentEditable DOM node was not found')
+  }
+  content.value = contentEditable.value?.innerText
+}
 
 onMounted(() => {
   if (!contentEditable.value) {
@@ -31,12 +38,13 @@ onMounted(() => {
   contentEditable.value.innerText = content.value
 })
 
-function handleInput() {
-  if (!contentEditable.value) {
-    throw Error('ContentEditable DOM node was not found')
-  }
-  content.value = contentEditable.value?.innerText
-}
+watch(
+  content,
+  debounce((newContent) => {
+    html.value = marked.parse(newContent)
+  }, 150),
+  { immediate: true }
+)
 </script>
 
 <template>

@@ -2,7 +2,7 @@
 @import 'highlight.js/styles/atom-one-dark.css';
 
 ul {
-    list-style: inside !important;
+  list-style: inside !important;
 }
 
 h1,
@@ -11,14 +11,14 @@ h3,
 h4,
 h5,
 h6 {
-    font-size: revert !important;
-    margin: 10px 0 !important;
+  font-size: revert !important;
+  margin: 10px 0 !important;
 }
 
 pre {
-    margin: 10px 0 !important;
+  margin: 10px 0 !important;
 }
 
 p {
-    margin: 10px 0 !important;
+  margin: 10px 0 !important;
 }
