@@ -1,11 +1,28 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import type { TimeLinePost } from '@/posts'
+import { Marked } from "marked";
+import { markedHighlight } from "marked-highlight";
+import hljs from 'highlight.js';
 
 const props = defineProps<{ post: TimeLinePost }>()
+
+const marked = new Marked(
+  markedHighlight({
+    emptyLangClass: 'hljs',
+    langPrefix: 'hljs language-',
+    highlight(code, lang) {
+      const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+      return hljs.highlight(code, { language }).value;
+    }
+  })
+);
 const title = ref(props.post.title)
 const content = ref(props.post.markdown)
 const contentEditable = ref<HTMLDivElement>()
+const html = computed(() =>
+  marked.parse(content.value)
+);
 
 onMounted(() => {
   if (!contentEditable.value) {
@@ -38,7 +55,7 @@ function handleInput() {
       <div contenteditable="true" ref="contentEditable" @input="handleInput" />
     </div>
     <div class="column">
-      {{ content }}
+      <div v-html="html" />
     </div>
   </div>
 </template>
