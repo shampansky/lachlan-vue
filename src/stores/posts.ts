@@ -25,6 +25,10 @@ export const usePosts = defineStore('posts', {
       this.selectedPeriod = period
     },
 
+    createPost(post: TimeLinePost): void {
+      console.log(post);
+    },
+
     async fetchPosts() {
       const res = await window.fetch('http://localhost:8000/posts')
       const data = (await res.json()) as Post[]
