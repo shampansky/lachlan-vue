@@ -7,6 +7,7 @@ import { markedHighlight } from 'marked-highlight'
 import hljs from 'highlight.js'
 import { debounce } from 'lodash'
 import { usePosts } from '@/stores/posts'
+import { useRouter } from 'vue-router'
 
 const props = defineProps<{ post: TimeLinePost }>()
 
@@ -25,7 +26,8 @@ const content = ref(props.post.markdown)
 const html: Ref<string | Promise<string>> = ref('')
 const contentEditable = ref<HTMLDivElement>()
 
-const posts = usePosts();
+const posts = usePosts()
+const router = useRouter()
 
 function handleInput() {
   if (!contentEditable.value) {
@@ -34,14 +36,15 @@ function handleInput() {
   content.value = contentEditable.value?.innerText
 }
 
-function handleClick() {
+async function handleClick() {
   const newPost: TimeLinePost = {
     ...props.post,
     title: title.value,
     markdown: content.value,
     html: html.value as string,
-  };
-  posts.createPost(newPost);
+  }
+  await posts.createPost(newPost)
+  await router.push('/')
 }
 
 onMounted(() => {
@@ -50,8 +53,6 @@ onMounted(() => {
   }
   contentEditable.value.innerText = content.value
 })
-
-
 
 watch(
   content,
@@ -84,12 +85,7 @@ watch(
 
   <div class="columns">
     <div class="column">
-      <button
-        class="button is-primary is-pulled-right"
-        @click="handleClick"
-      >
-        Save Post
-      </button>
+      <button class="button is-primary is-pulled-right" @click="handleClick">Save Post</button>
     </div>
   </div>
 </template>

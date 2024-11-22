@@ -25,8 +25,15 @@ export const usePosts = defineStore('posts', {
       this.selectedPeriod = period
     },
 
-    createPost(post: TimeLinePost): void {
-      console.log(post);
+    createPost(post: TimeLinePost) {
+      const body = JSON.stringify({ ...post, created: post.created.toISO() })
+      return window.fetch('http://localhost:8000/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body,
+      })
     },
 
     async fetchPosts() {
