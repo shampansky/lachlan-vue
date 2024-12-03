@@ -6,11 +6,13 @@ import { Marked } from 'marked'
 import { markedHighlight } from 'marked-highlight'
 import hljs from 'highlight.js'
 import { debounce } from 'lodash'
-import { usePosts } from '@/stores/posts'
-import { useRouter } from 'vue-router'
 import { useUsers } from '@/stores/users'
 
 const props = defineProps<{ post: TimeLinePost | Post }>()
+
+const emit = defineEmits<{
+  (event: 'submit', post: Post): void
+}>()
 
 const marked = new Marked(
   markedHighlight({
@@ -27,8 +29,6 @@ const content = ref(props.post.markdown)
 const html: Ref<string | Promise<string>> = ref('')
 const contentEditable = ref<HTMLDivElement>()
 
-const posts = usePosts()
-const router = useRouter()
 const usersStore = useUsers()
 
 function handleInput() {
@@ -53,8 +53,7 @@ async function handleSavePost() {
     markdown: content.value,
     html: html.value as string,
   }
-  await posts.createPost(newPost)
-  await router.push('/')
+  emit('submit', newPost)
 }
 
 onMounted(() => {

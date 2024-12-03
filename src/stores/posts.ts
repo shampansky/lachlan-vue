@@ -36,6 +36,17 @@ export const usePosts = defineStore('posts', {
       })
     },
 
+    updatePost(post: Post) {
+      const body = JSON.stringify(post)
+      return window.fetch('/api/posts', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body,
+      })
+    },
+
     async fetchPosts() {
       const res = await window.fetch('/api/posts')
       const data = (await res.json()) as Post[]
