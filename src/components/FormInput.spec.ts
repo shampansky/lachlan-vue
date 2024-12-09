@@ -55,8 +55,6 @@ describe('FormInput', () => {
       },
     })
 
-    console.log(wrapper.html())
-
     expect(wrapper.find('.is-danger').exists()).toBe(true)
   })
 
@@ -73,7 +71,7 @@ describe('FormInput', () => {
       },
     })
 
-    console.log(wrapper.html())
+    // console.log(wrapper.html())
 
     expect(wrapper.find('.is-danger').exists()).toBe(false)
   })
