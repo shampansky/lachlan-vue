@@ -1,23 +1,38 @@
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
-import { describe, expect, it } from 'vitest'
+import type { Pinia } from 'pinia'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import NavBar from '@/components/NavBar.vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { routes } from '@/router'
 import { useUsers } from '@/stores/users'
+import type { Router } from 'vue-router'
+
+vi.stubGlobal(
+  'fetch',
+  vi.fn(() => {
+    // ...
+  })
+)
 
 describe('NavBar', () => {
-  it('Renders signin and signup buttons when not authenticated', async () => {
+  let pinia: Pinia
+  let router: Router
+
+  beforeEach(() => {
     const el = document.createElement('div')
     el.id = 'modal'
     document.body.appendChild(el)
 
-    const pinia = createPinia()
-    const router = createRouter({
+    pinia = createPinia()
+    setActivePinia(pinia)
+    router = createRouter({
       history: createMemoryHistory(),
       routes,
     })
+  })
 
+  it('Renders signin and signup buttons when not authenticated', async () => {
     const wrapper = mount(NavBar, {
       global: {
         plugins: [pinia, router],
@@ -30,19 +45,9 @@ describe('NavBar', () => {
     console.log(wrapper.html())
   })
 
-  it.only('Renders new post and logout buttons when authenticated', async () => {
-    const el = document.createElement('div')
-    el.id = 'modal'
-    document.body.appendChild(el)
-
-    const pinia = createPinia()
-    setActivePinia(pinia)
+  it('Renders new post and logout buttons when authenticated', async () => {
     const users = useUsers()
     users.currentUserId = '2'
-    const router = createRouter({
-      history: createMemoryHistory(),
-      routes,
-    })
 
     const wrapper = mount(NavBar, {
       global: {
@@ -52,7 +57,9 @@ describe('NavBar', () => {
 
     expect(wrapper.find('a').text()).toBe('New Post')
     expect(wrapper.find('button').text()).toBe('Log Out')
-
+    await wrapper.find('#logout').trigger('click')
+    expect(wrapper.find('#sign-up').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="sign-in"]').exists()).toBe(true)
     console.log(wrapper.html())
   })
 })
