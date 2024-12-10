@@ -60,6 +60,10 @@ describe('NavBar', () => {
     await wrapper.find('#logout').trigger('click')
     expect(wrapper.find('#sign-up').exists()).toBe(true)
     expect(wrapper.find('[data-testid="sign-in"]').exists()).toBe(true)
-    console.log(wrapper.html())
+
+    await wrapper.find('[data-testid="sign-in"]').trigger('click')
+
+    expect(document.body.querySelector('#signin-form')).toBeTruthy()
+    // console.log(document.body.outerHTML)
   })
 })
